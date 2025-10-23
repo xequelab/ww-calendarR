@@ -7,16 +7,16 @@
         :disabled="ehMesAtual && !permitirMesAnterior"
         class="nav-button"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
 
       <h2 class="mes-titulo">{{ nomeMesAtual }} {{ anoAtual }}</h2>
 
       <button @click="proximoMes" class="nav-button">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </button>
     </div>
@@ -24,7 +24,7 @@
     <!-- Dias da semana -->
     <div class="dias-semana-grid">
       <div v-for="(dia, index) in diasDaSemana" :key="index" class="dia-semana-label">
-        {{ dia }}
+        {{ dia.toUpperCase() }}
       </div>
     </div>
 
@@ -37,13 +37,6 @@
         :class="['dia-celula', getDiaClasses(dia)]"
       >
         <span v-if="dia.data" class="dia-numero">{{ dia.numero }}</span>
-
-        <!-- Indicador de hoje -->
-        <div
-          v-if="dia.ehHoje && !dia.ehSelecionado"
-          class="indicador-hoje"
-          :style="{ backgroundColor: corPrimaria }"
-        ></div>
       </div>
     </div>
   </div>
@@ -109,8 +102,8 @@ export default {
     const corPrimaria = computed(() => props.content?.corPrimaria ?? '#4a90e2');
     const corSecundaria = computed(() => props.content?.corSecundaria ?? '#e8f4ff');
     
-    // Dias da semana em português
-    const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    // Dias da semana em português (2 letras)
+    const diasDaSemana = ['Do', 'Se', 'Te', 'Qu', 'Qu', 'Se', 'Sá'];
     
     // Mês e ano atual do calendário
     const mesAtual = computed(() => dataAtualCalendario.value.getMonth());
@@ -259,79 +252,71 @@ export default {
 <style scoped>
 .calendario-wrapper {
   width: 100%;
-  max-width: 420px;
+  max-width: 340px;
   margin: 0 auto;
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .calendario-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
-  background-color: v-bind(corPrimaria);
+  padding: 0 0 24px 0;
 }
 
 .mes-titulo {
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  color: #1a1a1a;
   margin: 0;
-  letter-spacing: 0.3px;
+  letter-spacing: -0.2px;
 }
 
 .nav-button {
-  background: rgba(255, 255, 255, 0.15);
+  background: #f5f5f7;
   border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: white;
+  transition: all 0.15s ease;
+  color: #666;
 }
 
 .nav-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.05);
+  background: #e8e8ea;
 }
 
 .nav-button:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
 .dias-semana-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  padding: 16px 16px 8px 16px;
-  background: #fafafa;
+  gap: 0;
+  margin-bottom: 8px;
 }
 
 .dia-semana-label {
   text-align: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: #666;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #a0a0a0;
+  letter-spacing: 0.3px;
   padding: 8px 0;
 }
 
 .dias-mes-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-  padding: 16px;
-  background: #fafafa;
+  gap: 4px;
 }
 
 .dia-celula {
@@ -341,13 +326,14 @@ export default {
   justify-content: center;
   position: relative;
   border-radius: 12px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  background: white;
+  transition: all 0.15s ease;
+  background: transparent;
 }
 
 .dia-numero {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 400;
+  color: #1a1a1a;
   position: relative;
   z-index: 2;
 }
@@ -358,22 +344,21 @@ export default {
 
 .dia-selecionado {
   background-color: v-bind(corPrimaria) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .dia-selecionado .dia-numero {
-  color: white;
-  font-weight: 700;
+  color: white !important;
+  font-weight: 500;
 }
 
 .dia-passado {
-  opacity: 0.35;
+  opacity: 0.25;
   cursor: not-allowed;
 }
 
 .dia-passado .dia-numero {
-  color: #999;
+  color: #a0a0a0;
 }
 
 .dia-futuro {
@@ -381,28 +366,14 @@ export default {
 }
 
 .dia-futuro:hover {
-  background: #f0f0f0;
-  transform: scale(1.08);
+  background: #f5f5f7;
+}
+
+.dia-hoje {
+  border: 1.5px solid rgba(var(--cor-primaria-rgb, 124, 58, 237), 0.3);
 }
 
 .dia-hoje .dia-numero {
-  color: v-bind(corPrimaria);
-  font-weight: 700;
-}
-
-.indicador-hoje {
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.dia-atual .dia-numero {
-  color: v-bind(corPrimaria);
-  font-weight: 700;
+  font-weight: 500;
 }
 </style>
