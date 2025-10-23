@@ -1,40 +1,59 @@
 <template>
-  <div class="calendario-agendamento">
-    <div class="calendario-cabecalho">
-      <button 
-        class="botao-navegacao" 
-        @click="mesAnterior" 
+  <div class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+    <!-- Cabeçalho -->
+    <div class="px-6 py-5 flex items-center justify-between" :style="{ backgroundColor: corPrimaria }">
+      <button
+        @click="mesAnterior"
         :disabled="ehMesAtual && !permitirMesAnterior"
+        class="p-2 rounded-lg transition-all duration-200 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-white/50"
       >
-        &lt;
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
       </button>
-      <div class="mes-ano">{{ nomeMesAtual }} {{ anoAtual }}</div>
-      <button class="botao-navegacao" @click="proximoMes">
-        &gt;
+
+      <h2 class="text-xl font-semibold text-white tracking-wide">
+        {{ nomeMesAtual }} {{ anoAtual }}
+      </h2>
+
+      <button
+        @click="proximoMes"
+        class="p-2 rounded-lg transition-all duration-200 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
+      >
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
       </button>
     </div>
-    
-    <div class="dias-semana">
-      <div v-for="(dia, index) in diasDaSemana" :key="index" class="dia-semana">
+
+    <!-- Dias da semana -->
+    <div class="grid grid-cols-7 gap-px bg-gray-100 px-4 py-3">
+      <div
+        v-for="(dia, index) in diasDaSemana"
+        :key="index"
+        class="text-center text-xs font-semibold text-gray-600 uppercase tracking-wider py-2"
+      >
         {{ dia }}
       </div>
     </div>
-    
-    <div class="dias-grid">
-      <div 
-        v-for="(dia, index) in diasDoMes" 
+
+    <!-- Grid de dias -->
+    <div class="grid grid-cols-7 gap-1 p-4 bg-gray-50/30">
+      <div
+        v-for="(dia, index) in diasDoMes"
         :key="index"
-        class="celula-dia"
-        :class="{
-          'dia-vazio': !dia.data,
-          'dia-atual': dia.ehHoje,
-          'dia-selecionado': dia.ehSelecionado,
-          'dia-passado': dia.ehPassado,
-          'dia-futuro': dia.ehFuturo
-        }"
         @click="selecionarData(dia)"
+        class="aspect-square flex items-center justify-center text-sm font-medium transition-all duration-200 rounded-xl relative group"
+        :class="getDiaClasses(dia)"
       >
-        <span v-if="dia.data">{{ dia.numero }}</span>
+        <span v-if="dia.data" class="relative z-10">{{ dia.numero }}</span>
+
+        <!-- Indicador de hoje -->
+        <div
+          v-if="dia.ehHoje && !dia.ehSelecionado"
+          class="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 rounded-full"
+          :style="{ backgroundColor: corPrimaria }"
+        ></div>
       </div>
     </div>
   </div>
@@ -199,7 +218,34 @@ export default {
     onMounted(() => {
       dataAtualCalendario.value = new Date();
     });
-    
+
+    // Função para gerar classes dinâmicas dos dias
+    const getDiaClasses = (dia) => {
+      const classes = [];
+
+      if (!dia.data) {
+        classes.push('invisible');
+        return classes;
+      }
+
+      if (dia.ehSelecionado) {
+        classes.push('dia-selecionado text-white font-bold shadow-lg scale-105');
+        return classes;
+      }
+
+      if (dia.ehPassado) {
+        classes.push('text-gray-300 cursor-not-allowed');
+      } else {
+        classes.push('cursor-pointer hover:bg-gray-100 hover:scale-105 text-gray-700');
+
+        if (dia.ehHoje) {
+          classes.push('font-bold dia-atual-cor');
+        }
+      }
+
+      return classes;
+    };
+
     return {
       diasDaSemana,
       diasDoMes,
@@ -213,127 +259,28 @@ export default {
       selecionarData,
       dataSelecionada,
       corPrimaria,
-      corSecundaria
+      corSecundaria,
+      getDiaClasses
     };
   }
 };
 </script>
 
-<style lang="scss" scoped>
-.calendario-agendamento {
-  font-family: Arial, sans-serif;
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-}
-
-.calendario-cabecalho {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
+<style scoped>
+/* Estilos customizados para dia selecionado com cor dinâmica */
+.dia-selecionado {
   background-color: v-bind(corPrimaria);
-  color: white;
-  font-weight: bold;
 }
 
-.mes-ano {
-  font-size: 18px;
+/* Estilos customizados para dia atual */
+.dia-atual-cor {
+  color: v-bind(corPrimaria);
 }
 
-.botao-navegacao {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.dias-semana {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  background-color: v-bind(corSecundaria);
-  border-bottom: 1px solid #eee;
-}
-
-.dia-semana {
-  padding: 10px 0;
-  text-align: center;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.dias-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(6, 1fr);
-}
-
-.celula-dia {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: relative;
-  
-  &:hover:not(.dia-vazio):not(.dia-passado) {
-    background-color: #f5f5f5;
-  }
-  
-  &.dia-vazio {
-    cursor: default;
-  }
-  
-  &.dia-atual {
-    font-weight: bold;
-    color: v-bind(corPrimaria);
-    
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 5px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background-color: v-bind(corPrimaria);
-    }
-  }
-  
-  &.dia-selecionado {
-    background-color: v-bind(corPrimaria);
-    color: white;
-    border-radius: 50%;
-    
-    &::after {
-      display: none;
-    }
-  }
-  
-  &.dia-passado {
-    color: #ccc;
-    cursor: not-allowed;
-  }
+/* Animações suaves */
+* {
+  transition-property: background-color, transform, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
 </style>
