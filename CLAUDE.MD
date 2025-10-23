@@ -39,12 +39,17 @@ Componente de calendário em português para seleção de datas futuras com cont
 
 ***Events:***
 - selecao: Disparado quando o usuário seleciona uma data. Payload: { value: "YYYY-MM-DD" }
-- mudancaMes: Disparado quando o usuário navega entre meses. Payload: { mes: 1-12, ano: YYYY }
+- cliqueProximoMes: Disparado AO CLICAR na seta do próximo mês (antes de mudar). Payload: { proximoMes: 1-12, proximoAno: YYYY }
+- cliqueMesAnterior: Disparado AO CLICAR na seta do mês anterior (antes de mudar). Payload: { mesAnterior: 1-12, anoAnterior: YYYY }
 
 ***Exposed Variables:***
 - dataSelecionada: A data selecionada pelo usuário no formato ISO "YYYY-MM-DD"
 - mesAtualNumerico: Mês atual sendo visualizado (1-12, onde 1=Janeiro, 2=Fevereiro, etc)
 - anoAtualNumerico: Ano atual sendo visualizado (YYYY)
+- proximoMesSeAvancar: Qual será o próximo mês (1-12) se clicar na seta →
+- proximoAnoSeAvancar: Qual será o próximo ano se clicar na seta →
+- proximoMesSeVoltar: Qual será o próximo mês (1-12) se clicar na seta ←
+- proximoAnoSeVoltar: Qual será o próximo ano se clicar na seta ←
 
 ***Usage - Bloqueio de Dias:***
 Para bloquear dias que o profissional não trabalha, vincule um array à propriedade diasDisponiveis:
@@ -59,10 +64,28 @@ Para bloquear dias que o profissional não trabalha, vincule um array à proprie
 Apenas os dias presentes no array estarão disponíveis para seleção. Dias ausentes serão bloqueados visualmente (riscados e com opacity reduzida).
 
 ***Usage - Workflow com Mudança de Mês:***
-1. Configure um workflow no evento "mudancaMes"
-2. Use as variáveis expostas mesAtualNumerico e anoAtualNumerico
-3. Faça request para buscar disponibilidade do novo mês
+
+**Opção 1: Usar eventos separados (RECOMENDADO)**
+1. Configure workflows nos eventos "cliqueProximoMes" e "cliqueMesAnterior"
+2. Use os payloads dos eventos (proximoMes, proximoAno ou mesAnterior, anoAnterior)
+3. Faça request para edge function ANTES que o calendário mude de mês
 4. Atualize a propriedade diasDisponiveis com os dados retornados
+5. O calendário já mostrará o novo mês com disponibilidade atualizada
+
+**Opção 2: Usar variáveis expostas**
+1. Vincule as variáveis proximoMesSeAvancar/proximoAnoSeAvancar à sua edge function
+2. A edge function será chamada automaticamente quando as variáveis mudarem
+3. Configure workflow para atualizar diasDisponiveis com o resultado
+
+**Exemplo de Workflow:**
+```
+Evento: cliqueProximoMes
+↓
+Request para Edge Function
+  - Parâmetros: event.proximoMes, event.proximoAno
+↓
+Atualizar diasDisponiveis com response
+```
 
 ***Notes:***
 - O componente inicia mostrando o mês atual

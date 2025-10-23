@@ -113,6 +113,38 @@ export default {
       defaultValue: new Date().getFullYear()
     });
 
+    // Variável exposta: próximo mês se avançar
+    const { value: proximoMesSeAvancar, setValue: setProximoMesSeAvancar } = wwLib.wwVariable.useComponentVariable({
+      uid: props.uid,
+      name: 'proximoMesSeAvancar',
+      type: 'number',
+      defaultValue: new Date().getMonth() + 2 > 12 ? 1 : new Date().getMonth() + 2
+    });
+
+    // Variável exposta: próximo ano se avançar
+    const { value: proximoAnoSeAvancar, setValue: setProximoAnoSeAvancar } = wwLib.wwVariable.useComponentVariable({
+      uid: props.uid,
+      name: 'proximoAnoSeAvancar',
+      type: 'number',
+      defaultValue: new Date().getMonth() + 2 > 12 ? new Date().getFullYear() + 1 : new Date().getFullYear()
+    });
+
+    // Variável exposta: próximo mês se voltar
+    const { value: proximoMesSeVoltar, setValue: setProximoMesSeVoltar } = wwLib.wwVariable.useComponentVariable({
+      uid: props.uid,
+      name: 'proximoMesSeVoltar',
+      type: 'number',
+      defaultValue: new Date().getMonth() === 0 ? 12 : new Date().getMonth()
+    });
+
+    // Variável exposta: próximo ano se voltar
+    const { value: proximoAnoSeVoltar, setValue: setProximoAnoSeVoltar } = wwLib.wwVariable.useComponentVariable({
+      uid: props.uid,
+      name: 'proximoAnoSeVoltar',
+      type: 'number',
+      defaultValue: new Date().getMonth() === 0 ? new Date().getFullYear() - 1 : new Date().getFullYear()
+    });
+
     // Configuração do calendário
     const permitirMesAnterior = computed(() => props.content?.permitirMesAnterior ?? false);
     const diasDisponiveis = computed(() => props.content?.diasDisponiveis ?? []);
@@ -192,22 +224,56 @@ export default {
       });
     });
     
+    // Função para calcular próximo mês e ano
+    const calcularProximoMes = (dataBase, direcao) => {
+      const dataCalculada = direcao === 'avancar'
+        ? addMonths(dataBase, 1)
+        : subMonths(dataBase, 1);
+
+      return {
+        mes: dataCalculada.getMonth() + 1, // 1-12
+        ano: dataCalculada.getFullYear()
+      };
+    };
+
+    // Função para atualizar as variáveis de "próximo mês"
+    const atualizarVariaveisProximoMes = () => {
+      // Calcula próximo mês se avançar
+      const proximoAvancar = calcularProximoMes(dataAtualCalendario.value, 'avancar');
+      setProximoMesSeAvancar(proximoAvancar.mes);
+      setProximoAnoSeAvancar(proximoAvancar.ano);
+
+      // Calcula próximo mês se voltar
+      const proximoVoltar = calcularProximoMes(dataAtualCalendario.value, 'voltar');
+      setProximoMesSeVoltar(proximoVoltar.mes);
+      setProximoAnoSeVoltar(proximoVoltar.ano);
+    };
+
     // Navegação entre meses
     const proximoMes = () => {
       if (isEditing.value) return;
+
+      // Calcula qual será o próximo mês
+      const proximoMesData = calcularProximoMes(dataAtualCalendario.value, 'avancar');
+
+      // Emite evento ANTES de mudar
+      emit('trigger-event', {
+        name: 'cliqueProximoMes',
+        event: {
+          proximoMes: proximoMesData.mes,
+          proximoAno: proximoMesData.ano
+        }
+      });
+
+      // Muda para o próximo mês
       dataAtualCalendario.value = addMonths(dataAtualCalendario.value, 1);
 
       // Atualiza variáveis expostas
-      const novoMes = dataAtualCalendario.value.getMonth() + 1; // 1-12
-      const novoAno = dataAtualCalendario.value.getFullYear();
-      setMesAtualNumerico(novoMes);
-      setAnoAtualNumerico(novoAno);
+      setMesAtualNumerico(proximoMesData.mes);
+      setAnoAtualNumerico(proximoMesData.ano);
 
-      // Emite evento de mudança de mês
-      emit('trigger-event', {
-        name: 'mudancaMes',
-        event: { mes: novoMes, ano: novoAno }
-      });
+      // Atualiza as variáveis de "próximo mês"
+      atualizarVariaveisProximoMes();
     };
 
     const mesAnterior = () => {
@@ -222,19 +288,27 @@ export default {
         return;
       }
 
+      // Calcula qual será o próximo mês
+      const proximoMesData = calcularProximoMes(dataAtualCalendario.value, 'voltar');
+
+      // Emite evento ANTES de mudar
+      emit('trigger-event', {
+        name: 'cliqueMesAnterior',
+        event: {
+          mesAnterior: proximoMesData.mes,
+          anoAnterior: proximoMesData.ano
+        }
+      });
+
+      // Muda para o mês anterior
       dataAtualCalendario.value = novaData;
 
       // Atualiza variáveis expostas
-      const novoMes = dataAtualCalendario.value.getMonth() + 1; // 1-12
-      const novoAno = dataAtualCalendario.value.getFullYear();
-      setMesAtualNumerico(novoMes);
-      setAnoAtualNumerico(novoAno);
+      setMesAtualNumerico(proximoMesData.mes);
+      setAnoAtualNumerico(proximoMesData.ano);
 
-      // Emite evento de mudança de mês
-      emit('trigger-event', {
-        name: 'mudancaMes',
-        event: { mes: novoMes, ano: novoAno }
-      });
+      // Atualiza as variáveis de "próximo mês"
+      atualizarVariaveisProximoMes();
     };
     
     // Selecionar uma data
@@ -257,6 +331,8 @@ export default {
     // Reiniciar o calendário para o mês atual quando o componente é montado
     onMounted(() => {
       dataAtualCalendario.value = new Date();
+      // Atualiza as variáveis de "próximo mês" na montagem
+      atualizarVariaveisProximoMes();
     });
 
     // Função para gerar classes dinâmicas dos dias
@@ -300,6 +376,12 @@ export default {
       mesAnterior,
       selecionarData,
       dataSelecionada,
+      mesAtualNumerico,
+      anoAtualNumerico,
+      proximoMesSeAvancar,
+      proximoAnoSeAvancar,
+      proximoMesSeVoltar,
+      proximoAnoSeVoltar,
       corPrimaria,
       corSecundaria,
       corTexto,
