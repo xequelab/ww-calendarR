@@ -8,7 +8,7 @@ export default {
   },
   properties: {
     permitirMesAnterior: {
-      label: { 
+      label: {
         pt: 'Permitir mês anterior',
         en: 'Allow previous month'
       },
@@ -23,6 +23,25 @@ export default {
       },
       propertyHelp: {
         tooltip: 'Quando ativado, permite que o usuário navegue para meses anteriores ao atual'
+      }
+      /* wwEditor:end */
+    },
+    diasDisponiveis: {
+      label: {
+        pt: 'Dias disponíveis',
+        en: 'Available days'
+      },
+      type: 'Array',
+      section: 'settings',
+      bindable: true,
+      defaultValue: [],
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'array',
+        tooltip: 'Array com objetos contendo date (YYYY-MM-DD) e slots disponíveis'
+      },
+      propertyHelp: {
+        tooltip: 'Array de objetos com formato: [{ date: "2025-10-26", slots: ["09:00", "10:00"] }]. Apenas dias presentes neste array estarão disponíveis para seleção.'
       }
       /* wwEditor:end */
     },
@@ -182,12 +201,23 @@ export default {
   triggerEvents: [
     {
       name: 'selecao',
-      label: { 
+      label: {
         pt: 'Ao selecionar data',
         en: 'On date selection'
       },
-      event: { 
-        value: '' 
+      event: {
+        value: ''
+      }
+    },
+    {
+      name: 'mudancaMes',
+      label: {
+        pt: 'Ao mudar de mês',
+        en: 'On month change'
+      },
+      event: {
+        mes: 0,
+        ano: 0
       }
     }
   ]

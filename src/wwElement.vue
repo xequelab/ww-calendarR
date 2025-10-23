@@ -97,8 +97,25 @@ export default {
       defaultValue: ''
     });
 
+    // Variável exposta para o mês atual (1-12)
+    const { value: mesAtualNumerico, setValue: setMesAtualNumerico } = wwLib.wwVariable.useComponentVariable({
+      uid: props.uid,
+      name: 'mesAtualNumerico',
+      type: 'number',
+      defaultValue: new Date().getMonth() + 1
+    });
+
+    // Variável exposta para o ano atual
+    const { value: anoAtualNumerico, setValue: setAnoAtualNumerico } = wwLib.wwVariable.useComponentVariable({
+      uid: props.uid,
+      name: 'anoAtualNumerico',
+      type: 'number',
+      defaultValue: new Date().getFullYear()
+    });
+
     // Configuração do calendário
     const permitirMesAnterior = computed(() => props.content?.permitirMesAnterior ?? false);
+    const diasDisponiveis = computed(() => props.content?.diasDisponiveis ?? []);
 
     // Cores
     const corPrimaria = computed(() => props.content?.corPrimaria ?? '#4a90e2');
@@ -156,7 +173,12 @@ export default {
         const ehPassado = isBefore(data, hoje) && !ehHoje;
         const ehFuturo = isAfter(data, hoje);
         const ehSelecionado = dataSelecao ? isSameDay(data, dataSelecao) : false;
-        
+        const dataFormatada = format(data, 'yyyy-MM-dd');
+
+        // Verifica se o dia está disponível no array diasDisponiveis
+        const diaDisponivel = diasDisponiveis.value.find(d => d.date === dataFormatada);
+        const ehBloqueado = !ehPassado && diasDisponiveis.value.length > 0 && !diaDisponivel;
+
         return {
           data: ehDoMesAtual ? data : null,
           numero: data.getDate(),
@@ -164,7 +186,8 @@ export default {
           ehPassado,
           ehFuturo,
           ehSelecionado,
-          dataFormatada: format(data, 'yyyy-MM-dd')
+          ehBloqueado,
+          dataFormatada
         };
       });
     });
@@ -173,33 +196,57 @@ export default {
     const proximoMes = () => {
       if (isEditing.value) return;
       dataAtualCalendario.value = addMonths(dataAtualCalendario.value, 1);
+
+      // Atualiza variáveis expostas
+      const novoMes = dataAtualCalendario.value.getMonth() + 1; // 1-12
+      const novoAno = dataAtualCalendario.value.getFullYear();
+      setMesAtualNumerico(novoMes);
+      setAnoAtualNumerico(novoAno);
+
+      // Emite evento de mudança de mês
+      emit('trigger-event', {
+        name: 'mudancaMes',
+        event: { mes: novoMes, ano: novoAno }
+      });
     };
-    
+
     const mesAnterior = () => {
       if (isEditing.value) return;
-      
+
       const novaData = subMonths(dataAtualCalendario.value, 1);
       const hoje = new Date();
-      
+
       // Se permitirMesAnterior for false, não permite navegar para meses anteriores ao atual
-      if (!permitirMesAnterior.value && 
+      if (!permitirMesAnterior.value &&
           (novaData.getMonth() < hoje.getMonth() && novaData.getFullYear() <= hoje.getFullYear())) {
         return;
       }
-      
+
       dataAtualCalendario.value = novaData;
+
+      // Atualiza variáveis expostas
+      const novoMes = dataAtualCalendario.value.getMonth() + 1; // 1-12
+      const novoAno = dataAtualCalendario.value.getFullYear();
+      setMesAtualNumerico(novoMes);
+      setAnoAtualNumerico(novoAno);
+
+      // Emite evento de mudança de mês
+      emit('trigger-event', {
+        name: 'mudancaMes',
+        event: { mes: novoMes, ano: novoAno }
+      });
     };
     
     // Selecionar uma data
     const selecionarData = (dia) => {
       if (isEditing.value) return;
-      
-      // Não permite selecionar dias vazios ou passados
-      if (!dia.data || dia.ehPassado) return;
-      
+
+      // Não permite selecionar dias vazios, passados ou bloqueados
+      if (!dia.data || dia.ehPassado || dia.ehBloqueado) return;
+
       // Atualiza a data selecionada
       setDataSelecionada(dia.dataFormatada);
-      
+
       // Emite o evento de seleção
       emit('trigger-event', {
         name: 'selecao',
@@ -226,7 +273,9 @@ export default {
         return classes.join(' ');
       }
 
-      if (dia.ehPassado) {
+      if (dia.ehBloqueado) {
+        classes.push('dia-bloqueado');
+      } else if (dia.ehPassado) {
         classes.push('dia-passado');
       } else {
         classes.push('dia-futuro');
@@ -375,6 +424,17 @@ export default {
 
 .dia-passado .dia-numero {
   color: #a0a0a0;
+}
+
+.dia-bloqueado {
+  opacity: 0.3;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.dia-bloqueado .dia-numero {
+  color: #d0d0d0;
+  text-decoration: line-through;
 }
 
 .dia-futuro {
