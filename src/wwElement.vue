@@ -99,11 +99,21 @@ export default {
 
     // Configuração do calendário
     const permitirMesAnterior = computed(() => props.content?.permitirMesAnterior ?? false);
+
+    // Cores
     const corPrimaria = computed(() => props.content?.corPrimaria ?? '#4a90e2');
     const corSecundaria = computed(() => props.content?.corSecundaria ?? '#e8f4ff');
+    const corTexto = computed(() => props.content?.corTexto ?? '#1a1a1a');
+    const corDiasSemana = computed(() => props.content?.corDiasSemana ?? '#a0a0a0');
+    const corHover = computed(() => props.content?.corHover ?? '#f5f5f7');
+
+    // Tamanhos de fonte
+    const tamanhoFonteTitulo = computed(() => props.content?.tamanhoFonteTitulo ?? '16px');
+    const tamanhoFonteDiasSemana = computed(() => props.content?.tamanhoFonteDiasSemana ?? '11px');
+    const tamanhoFonteDias = computed(() => props.content?.tamanhoFonteDias ?? '15px');
     
-    // Dias da semana em português (2 letras)
-    const diasDaSemana = ['Do', 'Se', 'Te', 'Qu', 'Qu', 'Se', 'Sá'];
+    // Dias da semana em português
+    const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
     
     // Mês e ano atual do calendário
     const mesAtual = computed(() => dataAtualCalendario.value.getMonth());
@@ -243,6 +253,12 @@ export default {
       dataSelecionada,
       corPrimaria,
       corSecundaria,
+      corTexto,
+      corDiasSemana,
+      corHover,
+      tamanhoFonteTitulo,
+      tamanhoFonteDiasSemana,
+      tamanhoFonteDias,
       getDiaClasses
     };
   }
@@ -267,9 +283,9 @@ export default {
 }
 
 .mes-titulo {
-  font-size: 16px;
+  font-size: v-bind(tamanhoFonteTitulo);
   font-weight: 500;
-  color: #1a1a1a;
+  color: v-bind(corTexto);
   margin: 0;
   letter-spacing: -0.2px;
 }
@@ -306,9 +322,9 @@ export default {
 
 .dia-semana-label {
   text-align: center;
-  font-size: 11px;
+  font-size: v-bind(tamanhoFonteDiasSemana);
   font-weight: 500;
-  color: #a0a0a0;
+  color: v-bind(corDiasSemana);
   letter-spacing: 0.3px;
   padding: 8px 0;
 }
@@ -331,9 +347,9 @@ export default {
 }
 
 .dia-numero {
-  font-size: 15px;
+  font-size: v-bind(tamanhoFonteDias);
   font-weight: 400;
-  color: #1a1a1a;
+  color: v-bind(corTexto);
   position: relative;
   z-index: 2;
 }
@@ -366,7 +382,7 @@ export default {
 }
 
 .dia-futuro:hover {
-  background: #f5f5f7;
+  background: v-bind(corHover);
 }
 
 .dia-hoje {

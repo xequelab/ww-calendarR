@@ -46,7 +46,7 @@ export default {
       /* wwEditor:end */
     },
     corSecundaria: {
-      label: { 
+      label: {
         pt: 'Cor secundária',
         en: 'Secondary color'
       },
@@ -61,6 +61,120 @@ export default {
       },
       propertyHelp: {
         tooltip: 'Define a cor de fundo da barra dos dias da semana'
+      }
+      /* wwEditor:end */
+    },
+    corTexto: {
+      label: {
+        pt: 'Cor do texto',
+        en: 'Text color'
+      },
+      type: 'Color',
+      section: 'style',
+      bindable: true,
+      defaultValue: '#1a1a1a',
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Cor do texto dos números dos dias'
+      },
+      propertyHelp: {
+        tooltip: 'Define a cor do texto dos números dos dias do calendário'
+      }
+      /* wwEditor:end */
+    },
+    corDiasSemana: {
+      label: {
+        pt: 'Cor dias da semana',
+        en: 'Weekday labels color'
+      },
+      type: 'Color',
+      section: 'style',
+      bindable: true,
+      defaultValue: '#a0a0a0',
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Cor dos labels dos dias da semana'
+      },
+      propertyHelp: {
+        tooltip: 'Define a cor dos labels dos dias da semana (DOM, SEG, TER, etc)'
+      }
+      /* wwEditor:end */
+    },
+    corHover: {
+      label: {
+        pt: 'Cor hover',
+        en: 'Hover color'
+      },
+      type: 'Color',
+      section: 'style',
+      bindable: true,
+      defaultValue: '#f5f5f7',
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Cor de fundo ao passar o mouse sobre os dias'
+      },
+      propertyHelp: {
+        tooltip: 'Define a cor de fundo que aparece ao passar o mouse sobre os dias disponíveis'
+      }
+      /* wwEditor:end */
+    },
+    tamanhoFonteTitulo: {
+      label: {
+        pt: 'Tamanho fonte título',
+        en: 'Title font size'
+      },
+      type: 'Length',
+      section: 'style',
+      bindable: true,
+      defaultValue: '16px',
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Tamanho da fonte do título (mês e ano)'
+      },
+      propertyHelp: {
+        tooltip: 'Define o tamanho da fonte do título que mostra o mês e ano'
+      }
+      /* wwEditor:end */
+    },
+    tamanhoFonteDiasSemana: {
+      label: {
+        pt: 'Tamanho fonte dias da semana',
+        en: 'Weekday font size'
+      },
+      type: 'Length',
+      section: 'style',
+      bindable: true,
+      defaultValue: '11px',
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Tamanho da fonte dos labels dos dias da semana'
+      },
+      propertyHelp: {
+        tooltip: 'Define o tamanho da fonte dos labels dos dias da semana (DOM, SEG, TER, etc)'
+      }
+      /* wwEditor:end */
+    },
+    tamanhoFonteDias: {
+      label: {
+        pt: 'Tamanho fonte dias',
+        en: 'Days font size'
+      },
+      type: 'Length',
+      section: 'style',
+      bindable: true,
+      defaultValue: '15px',
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Tamanho da fonte dos números dos dias'
+      },
+      propertyHelp: {
+        tooltip: 'Define o tamanho da fonte dos números dos dias do calendário'
       }
       /* wwEditor:end */
     }
