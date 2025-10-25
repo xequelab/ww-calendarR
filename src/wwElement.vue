@@ -334,14 +334,28 @@ export default {
       });
     };
     
-    // Reiniciar o calendário para o mês atual quando o componente é montado
+    // Inicializar o calendário quando o componente é montado
     onMounted(() => {
-      const hoje = new Date();
-      dataAtualCalendario.value = hoje;
+      // Se já existe uma data selecionada, navega para o mês dela
+      // Caso contrário, mostra o mês atual
+      let dataInicial;
+
+      if (dataSelecionada.value) {
+        try {
+          dataInicial = parseISO(dataSelecionada.value);
+        } catch (e) {
+          // Se a data for inválida, usa a data atual
+          dataInicial = new Date();
+        }
+      } else {
+        dataInicial = new Date();
+      }
+
+      dataAtualCalendario.value = dataInicial;
 
       // Inicializa mesAtualNumerico e anoAtualNumerico
-      setMesAtualNumerico(hoje.getMonth() + 1); // 1-12
-      setAnoAtualNumerico(hoje.getFullYear());
+      setMesAtualNumerico(dataInicial.getMonth() + 1); // 1-12
+      setAnoAtualNumerico(dataInicial.getFullYear());
 
       // Atualiza as variáveis de "próximo mês" na montagem
       atualizarVariaveisProximoMes();
