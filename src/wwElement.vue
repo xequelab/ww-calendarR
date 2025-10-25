@@ -118,7 +118,7 @@ export default {
       uid: props.uid,
       name: 'proximoMesSeAvancar',
       type: 'number',
-      defaultValue: new Date().getMonth() + 2 > 12 ? 1 : new Date().getMonth() + 2
+      defaultValue: null
     });
 
     // Variável exposta: próximo ano se avançar
@@ -126,7 +126,7 @@ export default {
       uid: props.uid,
       name: 'proximoAnoSeAvancar',
       type: 'number',
-      defaultValue: new Date().getMonth() + 2 > 12 ? new Date().getFullYear() + 1 : new Date().getFullYear()
+      defaultValue: null
     });
 
     // Variável exposta: próximo mês se voltar
@@ -134,7 +134,7 @@ export default {
       uid: props.uid,
       name: 'proximoMesSeVoltar',
       type: 'number',
-      defaultValue: new Date().getMonth() === 0 ? 12 : new Date().getMonth()
+      defaultValue: null
     });
 
     // Variável exposta: próximo ano se voltar
@@ -142,7 +142,7 @@ export default {
       uid: props.uid,
       name: 'proximoAnoSeVoltar',
       type: 'number',
-      defaultValue: new Date().getMonth() === 0 ? new Date().getFullYear() - 1 : new Date().getFullYear()
+      defaultValue: null
     });
 
     // Configuração do calendário
@@ -336,7 +336,13 @@ export default {
     
     // Reiniciar o calendário para o mês atual quando o componente é montado
     onMounted(() => {
-      dataAtualCalendario.value = new Date();
+      const hoje = new Date();
+      dataAtualCalendario.value = hoje;
+
+      // Inicializa mesAtualNumerico e anoAtualNumerico
+      setMesAtualNumerico(hoje.getMonth() + 1); // 1-12
+      setAnoAtualNumerico(hoje.getFullYear());
+
       // Atualiza as variáveis de "próximo mês" na montagem
       atualizarVariaveisProximoMes();
     });
