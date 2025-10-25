@@ -29,13 +29,15 @@ Componente de calendário em português para seleção de datas futuras com cont
 - corPrimaria: string - Cor principal (cabeçalho e dia selecionado) - padrão: #4a90e2
 - corSecundaria: string - Cor secundária (fundo dias da semana) - padrão: #e8f4ff
 - corTexto: string - Cor do texto dos números - padrão: #1a1a1a
+- corTitulo: string - Cor do texto do título (mês e ano) - padrão: #1a1a1a
 - corDiasSemana: string - Cor dos labels dos dias da semana - padrão: #a0a0a0
 - corHover: string - Cor de fundo ao passar mouse - padrão: #f5f5f7
 
-**Fontes:**
+**Fontes e Espaçamento:**
 - tamanhoFonteTitulo: string - Tamanho da fonte do título (mês/ano) - padrão: 16px
 - tamanhoFonteDiasSemana: string - Tamanho fonte dias da semana - padrão: 11px
 - tamanhoFonteDias: string - Tamanho dos números dos dias - padrão: 15px
+- paddingDias: string - Espaçamento interno ao redor do número de cada dia - padrão: 0px
 
 ***Events:***
 - selecao: Disparado quando o usuário seleciona uma data. Payload: { value: "YYYY-MM-DD" }

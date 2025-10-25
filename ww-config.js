@@ -196,6 +196,44 @@ export default {
         tooltip: 'Define o tamanho da fonte dos números dos dias do calendário'
       }
       /* wwEditor:end */
+    },
+    paddingDias: {
+      label: {
+        pt: 'Padding dos dias',
+        en: 'Days padding'
+      },
+      type: 'Length',
+      section: 'style',
+      bindable: true,
+      defaultValue: '0px',
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Espaçamento interno (padding) de cada dia do calendário'
+      },
+      propertyHelp: {
+        tooltip: 'Define o espaçamento interno ao redor do número de cada dia. Use valores como "4px", "8px", etc.'
+      }
+      /* wwEditor:end */
+    },
+    corTitulo: {
+      label: {
+        pt: 'Cor do título',
+        en: 'Title color'
+      },
+      type: 'Color',
+      section: 'style',
+      bindable: true,
+      defaultValue: '#1a1a1a',
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Cor do texto do título (mês e ano)'
+      },
+      propertyHelp: {
+        tooltip: 'Define a cor do texto que mostra o mês e ano no cabeçalho do calendário'
+      }
+      /* wwEditor:end */
     }
   },
   triggerEvents: [

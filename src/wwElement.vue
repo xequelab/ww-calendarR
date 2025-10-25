@@ -160,6 +160,12 @@ export default {
     const tamanhoFonteTitulo = computed(() => props.content?.tamanhoFonteTitulo ?? '16px');
     const tamanhoFonteDiasSemana = computed(() => props.content?.tamanhoFonteDiasSemana ?? '11px');
     const tamanhoFonteDias = computed(() => props.content?.tamanhoFonteDias ?? '15px');
+
+    // Padding
+    const paddingDias = computed(() => props.content?.paddingDias ?? '0px');
+
+    // Cor do título
+    const corTitulo = computed(() => props.content?.corTitulo ?? '#1a1a1a');
     
     // Dias da semana em português
     const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -387,9 +393,11 @@ export default {
       corTexto,
       corDiasSemana,
       corHover,
+      corTitulo,
       tamanhoFonteTitulo,
       tamanhoFonteDiasSemana,
       tamanhoFonteDias,
+      paddingDias,
       getDiaClasses
     };
   }
@@ -416,7 +424,7 @@ export default {
 .mes-titulo {
   font-size: v-bind(tamanhoFonteTitulo);
   font-weight: 500;
-  color: v-bind(corTexto);
+  color: v-bind(corTitulo);
   margin: 0;
   letter-spacing: -0.2px;
 }
@@ -483,6 +491,7 @@ export default {
   color: v-bind(corTexto);
   position: relative;
   z-index: 2;
+  padding: v-bind(paddingDias);
 }
 
 .dia-vazio {
