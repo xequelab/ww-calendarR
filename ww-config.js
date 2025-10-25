@@ -7,6 +7,25 @@ export default {
     icon: 'calendar'
   },
   properties: {
+    dataInicial: {
+      label: {
+        pt: 'Data inicial',
+        en: 'Initial date'
+      },
+      type: 'Text',
+      section: 'settings',
+      bindable: true,
+      defaultValue: '',
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'string',
+        tooltip: 'Data inicial do calendário no formato YYYY-MM-DD. Vincule a uma variável para persistir a seleção.'
+      },
+      propertyHelp: {
+        tooltip: 'Define a data inicial selecionada. Formato: YYYY-MM-DD. Para persistir a seleção, vincule a variável dataSelecionada a uma variável de página/global e depois vincule essa mesma variável aqui.'
+      }
+      /* wwEditor:end */
+    },
     permitirMesAnterior: {
       label: {
         pt: 'Permitir mês anterior',

@@ -146,6 +146,7 @@ export default {
     });
 
     // Configuração do calendário
+    const dataInicial = computed(() => props.content?.dataInicial ?? '');
     const permitirMesAnterior = computed(() => props.content?.permitirMesAnterior ?? false);
     const diasDisponiveis = computed(() => props.content?.diasDisponiveis ?? []);
 
@@ -334,28 +335,49 @@ export default {
       });
     };
     
+    // Watch para sincronizar com a propriedade dataInicial (two-way binding)
+    watch(() => dataInicial.value, (novaData) => {
+      if (novaData && novaData !== '' && novaData !== dataSelecionada.value) {
+        setDataSelecionada(novaData);
+        try {
+          const dataParsed = parseISO(novaData);
+          dataAtualCalendario.value = dataParsed;
+          setMesAtualNumerico(dataParsed.getMonth() + 1);
+          setAnoAtualNumerico(dataParsed.getFullYear());
+          atualizarVariaveisProximoMes();
+        } catch (e) {
+          console.error('Erro ao parsear dataInicial:', e);
+        }
+      }
+    }, { immediate: true });
+
     // Inicializar o calendário quando o componente é montado
     onMounted(() => {
-      // Se já existe uma data selecionada, navega para o mês dela
-      // Caso contrário, mostra o mês atual
-      let dataInicial;
+      // Prioridade: dataInicial > dataSelecionada > data atual
+      let dataParaInicializar;
 
-      if (dataSelecionada.value) {
+      if (dataInicial.value && dataInicial.value !== '') {
         try {
-          dataInicial = parseISO(dataSelecionada.value);
+          dataParaInicializar = parseISO(dataInicial.value);
+          setDataSelecionada(dataInicial.value);
         } catch (e) {
-          // Se a data for inválida, usa a data atual
-          dataInicial = new Date();
+          dataParaInicializar = new Date();
+        }
+      } else if (dataSelecionada.value && dataSelecionada.value !== '') {
+        try {
+          dataParaInicializar = parseISO(dataSelecionada.value);
+        } catch (e) {
+          dataParaInicializar = new Date();
         }
       } else {
-        dataInicial = new Date();
+        dataParaInicializar = new Date();
       }
 
-      dataAtualCalendario.value = dataInicial;
+      dataAtualCalendario.value = dataParaInicializar;
 
       // Inicializa mesAtualNumerico e anoAtualNumerico
-      setMesAtualNumerico(dataInicial.getMonth() + 1); // 1-12
-      setAnoAtualNumerico(dataInicial.getFullYear());
+      setMesAtualNumerico(dataParaInicializar.getMonth() + 1); // 1-12
+      setAnoAtualNumerico(dataParaInicializar.getFullYear());
 
       // Atualiza as variáveis de "próximo mês" na montagem
       atualizarVariaveisProximoMes();
