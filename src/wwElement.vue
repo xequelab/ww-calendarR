@@ -14,7 +14,11 @@
 
       <h2 class="mes-titulo">{{ nomeMesAtual }} {{ anoAtual }}</h2>
 
-      <button @click="proximoMes" class="nav-button">
+      <button
+        @click="proximoMes"
+        :disabled="!podeAvancarMes"
+        class="nav-button"
+      >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
         </svg>
@@ -44,20 +48,22 @@
 
 <script>
 import { ref, computed, watch, onMounted } from 'vue';
-import { 
-  startOfMonth, 
-  endOfMonth, 
-  startOfWeek, 
-  endOfWeek, 
-  eachDayOfInterval, 
-  format, 
-  isToday, 
-  isBefore, 
+import {
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  format,
+  isToday,
+  isBefore,
   isAfter,
-  addMonths, 
+  addMonths,
   subMonths,
   isSameDay,
-  parseISO
+  parseISO,
+  addDays,
+  startOfDay
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -148,6 +154,7 @@ export default {
     // Configuração do calendário
     const dataInicial = computed(() => props.content?.dataInicial ?? '');
     const permitirMesAnterior = computed(() => props.content?.permitirMesAnterior ?? false);
+    const diasFuturosLimite = computed(() => props.content?.diasFuturosLimite ?? 0);
     const diasDisponiveis = computed(() => props.content?.diasDisponiveis ?? []);
 
     // Cores
@@ -256,9 +263,28 @@ export default {
       setProximoAnoSeVoltar(proximoVoltar.ano);
     };
 
+    // Verifica se pode avançar para o próximo mês baseado no limite de dias futuros
+    const podeAvancarMes = computed(() => {
+      // Se não há limite configurado (0), sempre pode avançar
+      if (diasFuturosLimite.value === 0) return true;
+
+      const hoje = startOfDay(new Date());
+      const dataLimite = addDays(hoje, diasFuturosLimite.value);
+
+      // Calcula o primeiro dia do próximo mês
+      const proximoMesData = addMonths(dataAtualCalendario.value, 1);
+      const primeiroDiaProximoMes = startOfMonth(proximoMesData);
+
+      // Permite avançar se o primeiro dia do próximo mês está dentro do limite
+      return isBefore(primeiroDiaProximoMes, dataLimite) || isSameDay(primeiroDiaProximoMes, dataLimite);
+    });
+
     // Navegação entre meses
     const proximoMes = () => {
       if (isEditing.value) return;
+
+      // Verifica se pode avançar baseado no limite de dias futuros
+      if (!podeAvancarMes.value) return;
 
       // Calcula qual será o próximo mês
       const proximoMesData = calcularProximoMes(dataAtualCalendario.value, 'avancar');
@@ -453,6 +479,7 @@ export default {
       mesAtual,
       ehMesAtual,
       permitirMesAnterior,
+      podeAvancarMes,
       proximoMes,
       mesAnterior,
       selecionarData,

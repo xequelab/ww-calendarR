@@ -45,6 +45,25 @@ export default {
       }
       /* wwEditor:end */
     },
+    diasFuturosLimite: {
+      label: {
+        pt: 'Dias futuros (limite)',
+        en: 'Future days (limit)'
+      },
+      type: 'Number',
+      section: 'settings',
+      bindable: true,
+      defaultValue: 0,
+      /* wwEditor:start */
+      bindingValidation: {
+        type: 'number',
+        tooltip: 'Número máximo de dias futuros permitidos para agendamento. 0 = sem limite.'
+      },
+      propertyHelp: {
+        tooltip: 'Define quantos dias no futuro o usuário pode avançar no calendário. Por exemplo: 30 = permite apenas 30 dias à frente. Use 0 para desabilitar o limite.'
+      }
+      /* wwEditor:end */
+    },
     diasDisponiveis: {
       label: {
         pt: 'Dias disponíveis',

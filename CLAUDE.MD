@@ -24,6 +24,7 @@ Componente de calendário em português para seleção de datas futuras com cont
 **Configurações:**
 - dataInicial: string - Data inicial selecionada no formato "YYYY-MM-DD". Vincule a uma variável de página/global para persistir a seleção entre preview e edição.
 - permitirMesAnterior: boolean - Define se o usuário pode navegar para meses anteriores ao atual
+- diasFuturosLimite: number - Número máximo de dias futuros permitidos para agendamento. 0 = sem limite. Exemplo: 30 permite apenas 30 dias à frente.
 - diasDisponiveis: array - Array de objetos com datas disponíveis e slots. Formato: [{ date: "2025-10-26", slots: ["09:00", "10:00"] }]
 
 **Cores:**
@@ -121,6 +122,24 @@ Agora a data ficará salva mesmo ao sair e voltar do preview!
 3. Calendário → Evento "selecao" → Workflow: Atualizar minhaDataSelecionada = event.value
 ```
 
+***Usage - Limitar Dias Futuros:***
+
+Para limitar quantos dias no futuro o calendário pode avançar:
+
+1. Configure a propriedade **diasFuturosLimite** com o número de dias desejado
+2. Exemplo: `diasFuturosLimite = 30` permite agendamentos apenas até 30 dias à frente
+3. O botão de próximo mês será automaticamente desabilitado quando o limite for atingido
+4. Use `0` para desabilitar o limite (comportamento padrão)
+
+**Exemplo:**
+```
+diasFuturosLimite = 60
+- Hoje: 26/10/2025
+- Limite: 25/12/2025
+- Pode avançar até: Dezembro 2025
+- Janeiro 2026: Botão desabilitado ❌
+```
+
 ***Notes:***
 - O componente inicia mostrando o mês atual (ou o mês da dataInicial, se fornecida)
 - Datas passadas: opacity 0.25, não clicáveis
@@ -130,3 +149,4 @@ Agora a data ficará salva mesmo ao sair e voltar do preview!
 - Formato de data: ISO (YYYY-MM-DD)
 - Todas as propriedades são bindable (podem usar variáveis do WeWeb)
 - A variável exposta `dataSelecionada` é volátil (reseta ao sair do preview). Para persistir, use a propriedade `dataInicial` vinculada a uma variável de página/global.
+- O limite de dias futuros bloqueia a navegação de meses, mas não bloqueia dias individuais dentro do mês atual
