@@ -263,11 +263,7 @@ export default {
       // Calcula qual será o próximo mês
       const proximoMesData = calcularProximoMes(dataAtualCalendario.value, 'avancar');
 
-      console.log('DEBUG proximoMes - Antes de mudar:');
-      console.log('  dataAtualCalendario:', dataAtualCalendario.value);
-      console.log('  proximoMesData:', proximoMesData);
-
-      // Emite evento ANTES de mudar
+      // Emite evento ANTES de mudar (para compatibilidade com código antigo)
       emit('trigger-event', {
         name: 'cliqueProximoMes',
         event: {
@@ -279,17 +275,21 @@ export default {
       // Muda para o próximo mês
       dataAtualCalendario.value = addMonths(dataAtualCalendario.value, 1);
 
-      console.log('DEBUG proximoMes - Depois de mudar:');
-      console.log('  dataAtualCalendario:', dataAtualCalendario.value);
-      console.log('  mesAtualNumerico:', proximoMesData.mes);
-      console.log('  anoAtualNumerico:', proximoMesData.ano);
-
       // Atualiza variáveis expostas
       setMesAtualNumerico(proximoMesData.mes);
       setAnoAtualNumerico(proximoMesData.ano);
 
       // Atualiza as variáveis de "próximo mês"
       atualizarVariaveisProximoMes();
+
+      // Emite evento DEPOIS que o mês mudou (novo evento)
+      emit('trigger-event', {
+        name: 'mudancaMes',
+        event: {
+          mes: proximoMesData.mes,
+          ano: proximoMesData.ano
+        }
+      });
     };
 
     const mesAnterior = () => {
@@ -307,7 +307,7 @@ export default {
       // Calcula qual será o próximo mês
       const proximoMesData = calcularProximoMes(dataAtualCalendario.value, 'voltar');
 
-      // Emite evento ANTES de mudar
+      // Emite evento ANTES de mudar (para compatibilidade com código antigo)
       emit('trigger-event', {
         name: 'cliqueMesAnterior',
         event: {
@@ -325,6 +325,15 @@ export default {
 
       // Atualiza as variáveis de "próximo mês"
       atualizarVariaveisProximoMes();
+
+      // Emite evento DEPOIS que o mês mudou (novo evento)
+      emit('trigger-event', {
+        name: 'mudancaMes',
+        event: {
+          mes: proximoMesData.mes,
+          ano: proximoMesData.ano
+        }
+      });
     };
     
     // Selecionar uma data
@@ -384,12 +393,27 @@ export default {
 
       dataAtualCalendario.value = dataParaInicializar;
 
+      const mesInicial = dataParaInicializar.getMonth() + 1; // 1-12
+      const anoInicial = dataParaInicializar.getFullYear();
+
       // Inicializa mesAtualNumerico e anoAtualNumerico
-      setMesAtualNumerico(dataParaInicializar.getMonth() + 1); // 1-12
-      setAnoAtualNumerico(dataParaInicializar.getFullYear());
+      setMesAtualNumerico(mesInicial);
+      setAnoAtualNumerico(anoInicial);
 
       // Atualiza as variáveis de "próximo mês" na montagem
       atualizarVariaveisProximoMes();
+
+      // Emite evento de mudança de mês após a montagem inicial
+      // (para que workflows possam buscar dados do mês inicial)
+      if (!isEditing.value) {
+        emit('trigger-event', {
+          name: 'mudancaMes',
+          event: {
+            mes: mesInicial,
+            ano: anoInicial
+          }
+        });
+      }
     });
 
     // Função para gerar classes dinâmicas dos dias

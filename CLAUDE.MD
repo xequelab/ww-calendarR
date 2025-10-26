@@ -42,6 +42,7 @@ Componente de calendário em português para seleção de datas futuras com cont
 
 ***Events:***
 - selecao: Disparado quando o usuário seleciona uma data. Payload: { value: "YYYY-MM-DD" }
+- mudancaMes: Disparado DEPOIS que o mês mudou (após carregar). Payload: { mes: 1-12, ano: YYYY }. **USE ESTE EVENTO para workflows que precisam buscar dados do mês atual.**
 - cliqueProximoMes: Disparado AO CLICAR na seta do próximo mês (antes de mudar). Payload: { proximoMes: 1-12, proximoAno: YYYY }
 - cliqueMesAnterior: Disparado AO CLICAR na seta do mês anterior (antes de mudar). Payload: { mesAnterior: 1-12, anoAnterior: YYYY }
 
@@ -68,27 +69,37 @@ Apenas os dias presentes no array estarão disponíveis para seleção. Dias aus
 
 ***Usage - Workflow com Mudança de Mês:***
 
-**Opção 1: Usar eventos separados (RECOMENDADO)**
-1. Configure workflows nos eventos "cliqueProximoMes" e "cliqueMesAnterior"
-2. Use os payloads dos eventos (proximoMes, proximoAno ou mesAnterior, anoAnterior)
-3. Faça request para edge function ANTES que o calendário mude de mês
-4. Atualize a propriedade diasDisponiveis com os dados retornados
-5. O calendário já mostrará o novo mês com disponibilidade atualizada
+**RECOMENDADO: Usar o evento "mudancaMes"**
 
-**Opção 2: Usar variáveis expostas**
-1. Vincule as variáveis proximoMesSeAvancar/proximoAnoSeAvancar à sua edge function
-2. A edge function será chamada automaticamente quando as variáveis mudarem
-3. Configure workflow para atualizar diasDisponiveis com o resultado
+Este é o jeito mais simples e lógico. O evento dispara automaticamente:
+- Quando o componente carrega pela primeira vez
+- Quando o usuário clica na seta → (próximo mês)
+- Quando o usuário clica na seta ← (mês anterior)
+
+**Como configurar:**
+1. Configure um workflow no evento **"Ao mudar de mês (após carregar)"**
+2. Faça request para edge function usando `event.mes` e `event.ano`
+3. Atualize a propriedade `diasDisponiveis` com os dados retornados
 
 **Exemplo de Workflow:**
 ```
-Evento: cliqueProximoMes
+Evento: mudancaMes
 ↓
 Request para Edge Function
-  - Parâmetros: event.proximoMes, event.proximoAno
+  - Parâmetros: event.mes, event.ano
 ↓
 Atualizar diasDisponiveis com response
 ```
+
+**Vantagens:**
+- Lógica simples: o evento sempre reflete o mês que ESTÁ SENDO EXIBIDO
+- Funciona tanto para próximo quanto para mês anterior
+- Dispara também no carregamento inicial
+- Não precisa de variáveis intermediárias
+
+**Opções alternativas (avançadas):**
+- Use `mesAtualNumerico` e `anoAtualNumerico` se precisar acessar o mês atual via variável
+- Use `cliqueProximoMes` e `cliqueMesAnterior` se precisar fazer algo ANTES da mudança acontecer
 
 ***Usage - Persistir Seleção:***
 

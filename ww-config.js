@@ -267,10 +267,21 @@ export default {
       }
     },
     {
+      name: 'mudancaMes',
+      label: {
+        pt: 'Ao mudar de mês (após carregar)',
+        en: 'On month change (after load)'
+      },
+      event: {
+        mes: 0,
+        ano: 0
+      }
+    },
+    {
       name: 'cliqueProximoMes',
       label: {
-        pt: 'Ao clicar em próximo mês',
-        en: 'On next month click'
+        pt: 'Ao clicar em próximo mês (antes de mudar)',
+        en: 'On next month click (before change)'
       },
       event: {
         proximoMes: 0,
@@ -280,8 +291,8 @@ export default {
     {
       name: 'cliqueMesAnterior',
       label: {
-        pt: 'Ao clicar em mês anterior',
-        en: 'On previous month click'
+        pt: 'Ao clicar em mês anterior (antes de mudar)',
+        en: 'On previous month click (before change)'
       },
       event: {
         mesAnterior: 0,
