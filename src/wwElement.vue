@@ -263,6 +263,10 @@ export default {
       // Calcula qual será o próximo mês
       const proximoMesData = calcularProximoMes(dataAtualCalendario.value, 'avancar');
 
+      console.log('DEBUG proximoMes - Antes de mudar:');
+      console.log('  dataAtualCalendario:', dataAtualCalendario.value);
+      console.log('  proximoMesData:', proximoMesData);
+
       // Emite evento ANTES de mudar
       emit('trigger-event', {
         name: 'cliqueProximoMes',
@@ -274,6 +278,11 @@ export default {
 
       // Muda para o próximo mês
       dataAtualCalendario.value = addMonths(dataAtualCalendario.value, 1);
+
+      console.log('DEBUG proximoMes - Depois de mudar:');
+      console.log('  dataAtualCalendario:', dataAtualCalendario.value);
+      console.log('  mesAtualNumerico:', proximoMesData.mes);
+      console.log('  anoAtualNumerico:', proximoMesData.ano);
 
       // Atualiza variáveis expostas
       setMesAtualNumerico(proximoMesData.mes);
